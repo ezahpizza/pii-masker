@@ -128,7 +128,7 @@ bun run dev
 ---
 
 ## Approach
-- **PII Detection**: Uses OCR (e.g., pytesseract) to extract text regions from images. Applies regex and/or ML models to identify PII (names, emails, phone numbers, etc.).
+- **PII Detection**: Uses OCR enabled by easyOCR to extract text regions from images. Applies regex and a spacy model to identify PII (names, emails, phone numbers, etc.).
 - **Redaction**: Masks detected PII regions in the image (e.g., blurring, black boxes).
 - **Frontend**: Provides a modern, responsive UI for uploading images, viewing analysis, and downloading results. All API communication is handled via REST endpoints.
 - **Modular Design**: Both backend and frontend are organized for scalability and maintainability.
