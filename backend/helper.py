@@ -133,7 +133,6 @@ def mask_pii_regions(image: np.ndarray, pii_detections: List[Dict[str, Any]]) ->
         
         cv2.rectangle(masked_image, (x, y), (x + w, y + h), (0, 0, 0), -1)
         
-        # Optional: Add label
         # label = f"[{', '.join(set(detection['pii_types']))}]"
         # cv2.putText(masked_image, label, (x, y - 10), 
         #            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
