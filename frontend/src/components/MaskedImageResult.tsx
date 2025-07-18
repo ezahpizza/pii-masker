@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Download, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ interface MaskedImageResultProps {
   piiCount: number;
 }
 
-export const MaskedImageResult: React.FC<MaskedImageResultProps> = ({ imageUrl, piiCount }) => {
+export const MaskedImageResult = ({ imageUrl, piiCount }: MaskedImageResultProps) => {
   const downloadImage = () => {
     const link = document.createElement('a');
     link.href = imageUrl;

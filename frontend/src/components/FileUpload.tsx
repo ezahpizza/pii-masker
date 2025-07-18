@@ -9,11 +9,11 @@ interface FileUploadProps {
   disabled?: boolean;
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({
+export const FileUpload = ({
   onFileSelect,
   selectedFile,
   disabled = false
-}) => {
+}: FileUploadProps) => {
   const [isDragOver, setIsDragOver] = React.useState(false);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -51,7 +51,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       {!selectedFile ? (
         <div
           className={cn(
-            "relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 bg-dot-8-s-2-white",
+            "relative border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 bg-dot-8-s-2-",
             isDragOver ? "border-primary bg-primary/5" : "border-muted",
             disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:border-primary/50"
           )}

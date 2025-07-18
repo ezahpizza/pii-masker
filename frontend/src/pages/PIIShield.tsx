@@ -9,7 +9,7 @@ import { MaskedImageResult } from '@/components/MaskedImageResult';
 import { usePIIAnalysis, usePIIMasking } from '@/hooks/usePIIMutations';
 import { PIIAnalysisResponse } from '@/lib/api';
 
-const PIIShield: React.FC = () => {
+const PIIShield = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [analysisResult, setAnalysisResult] = useState<PIIAnalysisResponse | null>(null);

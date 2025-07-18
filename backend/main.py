@@ -32,33 +32,27 @@ async def mask_pii_endpoint(
     Endpoint to upload image and get back PII-masked version.
     
     Args:
-        file: Image file (jpg, png, jpeg)
+        file: Image file 
     
     Returns:
         StreamingResponse with masked image
     """
-    # Validate file type
+
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="File must be an image")
     
     try:
-        # Load image
+
         image = load_image_from_upload(file)
         
-        # Extract text with OCR
         ocr_data = extract_text_with_ocr(image)
         
-        # Detect PII
         pii_detections = detect_pii_in_ocr_data(ocr_data)
         
-        # Mask PII regions
-
         masked_image = mask_pii_regions(image, pii_detections)
         
-        # Convert to bytes
         img_bytes = image_to_bytes(masked_image)
         
-        # Return as streaming response
         return StreamingResponse(
             io.BytesIO(img_bytes),
             media_type="image/png",
@@ -74,22 +68,18 @@ async def mask_pii_endpoint(
 @app.post("/analyze-pii/")
 async def analyze_pii_endpoint(file: UploadFile = File(...)):
     """
-    Analyze image for PII without masking - returns JSON with detected PII info.
+    Analyze image for PII  - returns JSON with detected PII info.
     """
     if not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="File must be an image")
     
     try:
-        # Load image
         image = load_image_from_upload(file)
         
-        # Extract text with OCR
         ocr_data = extract_text_with_ocr(image)
         
-        # Detect PII
         pii_detections = detect_pii_in_ocr_data(ocr_data)
         
-        # Return analysis results
         return {
             "total_text_regions": len(ocr_data),
             "pii_detections": len(pii_detections),
@@ -115,6 +105,5 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint."""
     return {"status": "healthy", "ocr_ready": True, "nlp_ready": True}
 

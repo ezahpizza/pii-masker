@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Eye, MapPin } from 'lucide-react';
 
@@ -18,7 +17,7 @@ interface PIIAnalysisResultProps {
   data: PIIAnalysisData;
 }
 
-export const PIIAnalysisResult: React.FC<PIIAnalysisResultProps> = ({ data }) => {
+export const PIIAnalysisResult = ({ data }: PIIAnalysisResultProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

@@ -4,27 +4,26 @@ import cv2
 import numpy as np
 import easyocr
 import spacy
-from fastapi import File, UploadFile, HTTPException
+from fastapi import UploadFile, HTTPException
 from PIL import Image
 from typing import List, Tuple, Dict, Any
 
 ocr_reader = easyocr.Reader(['en', 'hi'])
 
-# Load SpaCy model
+# SpaCy model
 try:
     nlp = spacy.load("en_core_web_sm")
 except OSError:
-    raise RuntimeError("SpaCy model 'en_core_web_sm' not found. Install with: python -m spacy download en_core_web_sm")
+    raise RuntimeError("SpaCy model 'en_core_web_sm' not found")
 
-# PII detection patterns
 PII_PATTERNS = [
-    (r'\b\d{4}\s*\d{4}\s*\d{4}\b', 'AADHAAR'),           # Aadhaar with spaces
-    (r'\b\d{12}\b', 'AADHAAR'),                          # Aadhaar without spaces
-    (r'\b[6-9]\d{9}\b', 'PHONE'),                        # Indian phone numbers
-    (r'\b\d{10}\b', 'PHONE'),                            # General 10-digit phone
-    (r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', 'EMAIL'),  # Email
-    (r'\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b', 'DATE'),     # Date formats
-    (r'\b\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\b', 'DATE'),  # Date with month names
+    (r'\b\d{4}\s*\d{4}\s*\d{4}\b', 'AADHAAR'),          
+    (r'\b\d{12}\b', 'AADHAAR'),                          
+    (r'\b[6-9]\d{9}\b', 'PHONE'),                       
+    (r'\b\d{10}\b', 'PHONE'),                            
+    (r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', 'EMAIL'), 
+    (r'\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b', 'DATE'),     
+    (r'\b\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4}\b', 'DATE'),  
 ]
 
 def load_image_from_upload(file: UploadFile) -> np.ndarray:
@@ -50,12 +49,12 @@ def load_image_from_upload(file: UploadFile) -> np.ndarray:
 def extract_text_with_ocr(image: np.ndarray) -> List[Dict[str, Any]]:
     """Extract text and bounding boxes using EasyOCR."""
     try:
-        # EasyOCR returns [bbox, text, confidence]
+        # returns [bbox, text, confidence]
         results = ocr_reader.readtext(image)
         
         ocr_data = []
         for bbox, text, confidence in results:
-            # Convert bbox to (x, y, width, height) format
+
             bbox_array = np.array(bbox)
             x_min = int(bbox_array[:, 0].min())
             y_min = int(bbox_array[:, 1].min())
@@ -74,7 +73,7 @@ def extract_text_with_ocr(image: np.ndarray) -> List[Dict[str, Any]]:
         raise HTTPException(status_code=500, detail=f"OCR extraction failed: {str(e)}")
 
 def detect_pii_with_regex(text: str) -> List[Tuple[str, str]]:
-    """Detect PII using regex patterns."""
+
     pii_matches = []
     
     for pattern, pii_type in PII_PATTERNS:
@@ -85,11 +84,11 @@ def detect_pii_with_regex(text: str) -> List[Tuple[str, str]]:
     return pii_matches
 
 def detect_pii_with_spacy(text: str) -> List[Tuple[str, str]]:
-    """Detect PII using SpaCy NER."""
+
     doc = nlp(text)
     pii_matches = []
     
-    # Define PII entity types
+    
     pii_entities = {'PERSON', 'GPE', 'DATE', 'ORG', 'MONEY', 'CARDINAL'}
     
     for ent in doc.ents:
@@ -99,7 +98,7 @@ def detect_pii_with_spacy(text: str) -> List[Tuple[str, str]]:
     return pii_matches
 
 def detect_pii_in_ocr_data(ocr_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Detect PII in OCR extracted text and return with bounding boxes."""
+
     pii_detections = []
     
     for item in ocr_data:
@@ -126,13 +125,12 @@ def detect_pii_in_ocr_data(ocr_data: List[Dict[str, Any]]) -> List[Dict[str, Any
     return pii_detections
 
 def mask_pii_regions(image: np.ndarray, pii_detections: List[Dict[str, Any]]) -> np.ndarray:
-    """Mask PII regions on the image using black rectangles."""
+
     masked_image = image.copy()
     
     for detection in pii_detections:
         x, y, w, h = detection['bbox']
         
-        # Draw black rectangle to mask PII
         cv2.rectangle(masked_image, (x, y), (x + w, y + h), (0, 0, 0), -1)
         
         # Optional: Add label
@@ -143,14 +141,12 @@ def mask_pii_regions(image: np.ndarray, pii_detections: List[Dict[str, Any]]) ->
     return masked_image
 
 def image_to_bytes(image: np.ndarray, format: str = 'PNG') -> bytes:
-    """Convert OpenCV image to bytes."""
-    # Convert BGR to RGB
+
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     
-    # Convert to PIL Image
+
     pil_image = Image.fromarray(rgb_image)
     
-    # Save to bytes
     img_bytes = io.BytesIO()
     pil_image.save(img_bytes, format=format)
     img_bytes.seek(0)
