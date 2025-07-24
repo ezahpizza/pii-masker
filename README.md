@@ -24,7 +24,7 @@ A full-stack application for redacting Personally Identifiable Information (PII)
 - **Python 3.13**
 - **FastAPI** (for REST API)
 - **Pillow / OpenCV** (image processing)
-- **Custom PII detection logic**
+- **Custom PII detection logic** (Regex + Spacy + easyOCR)
 - **uvicorn** (ASGI server)
 
 ### Frontend
